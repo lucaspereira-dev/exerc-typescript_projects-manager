@@ -4,7 +4,7 @@ import { Request, Response } from 'express'
 export class ListProjectsController {
   constructor(private listProjectsUseCase: ListProjectsUseCase) {}
 
-  handle(resquest: Request, response: Response) {
+  handle(resquest: Request, response: Response): Response {
     const projects = this.listProjectsUseCase.execute()
     return response.status(200).json(projects)
   }

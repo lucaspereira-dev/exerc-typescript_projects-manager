@@ -6,7 +6,7 @@ export class DeleteProjectController {
   handle(request: Request, response: Response): Response {
     const { id } = request.params
     this.deleteProjectUseCase.execute(id)
-    return response.json(200).json({
+    return response.status(200).json({
       code: 'Success',
       message: `Projeto de ID ${id} excluido com sucesso`,
     })

@@ -57,9 +57,8 @@ export class ProjectsRepository {
     return this.projects[index]
   }
 
-  delete(id: String) {
+  delete(id: String): Projects[] {
     const index = this.projects.findIndex(nodeProject => nodeProject.id === id)
-    delete this.projects[index]
-    return true
+    return this.projects.splice(index, 1)
   }
 }

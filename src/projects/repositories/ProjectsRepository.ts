@@ -1,22 +1,28 @@
 import { Projects } from '@projects/entities/Projects'
+import { AppDataSource } from '@shared/typeorm'
+import { Repository } from 'typeorm'
 
-type CreateProjectDTO = {
-  name: String
-  owner: String
+export type CreateProjectDTO = {
+  name: string
+  owner: string
 }
-
-type UpdateProjectDTO = {
-  id: String
-  name: String
-  owner: String
+export type PaginateParams = {
+  page: number
+  skip: number
+  take: number
 }
-
+export type ProjectsPaginateProperties = {
+  per_page: number
+  total: number
+  current_page: number
+  data: Projects[]
+}
 export class ProjectsRepository {
-  private projects: Projects[]
+  private repository: Repository<Projects>
   private static INSTANCE: ProjectsRepository
 
   private constructor() {
-    this.projects = []
+    this.repository = AppDataSource.getRepository(Projects)
   }
 
   public static getInstance(): ProjectsRepository {
@@ -26,39 +32,42 @@ export class ProjectsRepository {
     return this.INSTANCE
   }
 
-  create({ name, owner }: CreateProjectDTO): Projects {
-    const project = new Projects()
-    Object.assign(project, {
-      name: name,
-      owner: owner,
-    })
-    this.projects.push(project)
-    return project
+  async create({ name, owner }: CreateProjectDTO): Promise<Projects> {
+    const project = await this.repository.create({ name, owner })
+    return await this.repository.save(project)
   }
 
-  findAll(): Projects[] {
-    return this.projects
+  async findAll({
+    page,
+    skip,
+    take,
+  }: PaginateParams): Promise<ProjectsPaginateProperties> {
+    const [projects, count] = await this.repository
+      .createQueryBuilder()
+      .skip(skip)
+      .take(take)
+      .getManyAndCount()
+    return {
+      per_page: take,
+      total: count,
+      current_page: page,
+      data: projects,
+    }
   }
 
-  findByName(name: String): Projects | undefined {
-    return this.projects.find(project => project.name === name)
+  async findByName(name: string): Promise<Projects | null> {
+    return this.repository.findOneBy({ name })
   }
 
-  findById(id: String): Projects | undefined {
-    return this.projects.find(project => project.id === id)
+  async findById(id: string): Promise<Projects | null> {
+    return this.repository.findOneBy({ id })
   }
 
-  update({ id, name, owner }: UpdateProjectDTO): Projects {
-    const index = this.projects.findIndex(nodeProject => nodeProject.id === id)
-    Object.assign(this.projects[index], {
-      name: name,
-      owner: owner,
-    })
-    return this.projects[index]
+  async update(project: Projects): Promise<Projects> {
+    return this.repository.save(project)
   }
 
-  delete(id: String): Projects[] {
-    const index = this.projects.findIndex(nodeProject => nodeProject.id === id)
-    return this.projects.splice(index, 1)
+  async delete(project: Projects): Promise<void> {
+    await this.repository.remove(project)
   }
 }

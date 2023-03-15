@@ -5,8 +5,8 @@ import { AppError } from '@shared/errors/AppError'
 export class SelectProjectUseCase {
   constructor(private projectsRepository: ProjectsRepository) {}
 
-  execute(id: String): Projects {
-    const project = this.projectsRepository.findById(id)
+  async execute(id: string): Promise<Projects> {
+    const project = await this.projectsRepository.findById(id)
     if (!project) {
       throw new AppError('ID de projeto não encontrado')
     }

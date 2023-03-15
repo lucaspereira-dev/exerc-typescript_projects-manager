@@ -1,0 +1,46 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "My project typescript",
+    "description": "My project documentation with all specifications",
+    "version": "1.0.0",
+    "contact": {
+      "name": "Lucas Pereira",
+      "email": "lucaspereira.dev@outlook.com"
+    }
+  },
+  "paths": {
+    "/projects": {
+      "post": {
+        "tags": ["projects"],
+        "summary": "Create project",
+        "description": "Creacte new project",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string"
+                  },
+                  "owner": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Project created"
+          },
+          "401": {
+            "description": "Nome de projeto já existe"
+          }
+        }
+      }
+    }
+  }
+}

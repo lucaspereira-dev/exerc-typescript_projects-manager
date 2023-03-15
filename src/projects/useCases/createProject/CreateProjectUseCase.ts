@@ -10,8 +10,8 @@ type CreateProjectDTO = {
 export class CreateProjectUseCase {
   constructor(private projectsRepository: ProjectsRepository) {}
 
-  execute({ name, owner }: CreateProjectDTO): Projects {
-    const projectAlreadyExists = this.projectsRepository.findByName(name)
+  async execute({ name, owner }: CreateProjectDTO): Promise<Projects> {
+    const projectAlreadyExists = await this.projectsRepository.findByName(name)
     if (projectAlreadyExists) {
       throw new AppError('Nome de projeto já existe', 401)
     }

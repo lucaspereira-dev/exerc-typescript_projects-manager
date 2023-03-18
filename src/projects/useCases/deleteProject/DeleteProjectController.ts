@@ -6,9 +6,6 @@ export class DeleteProjectController {
   async handle(request: Request, response: Response): Promise<Response> {
     const { id } = request.params
     await this.deleteProjectUseCase.execute(id)
-    return response.status(200).json({
-      code: 'Success',
-      message: `Projeto de ID ${id} excluido com sucesso`,
-    })
+    return response.status(204).send()
   }
 }

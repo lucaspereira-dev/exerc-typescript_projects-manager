@@ -1,14 +1,15 @@
 import { Projects } from '@projects/entities/Projects'
-import { ProjectsRepository } from '@projects/repositories/ProjectsRepository'
+import { IProjectsRepository } from '@projects/repositories/IProjectsRepository'
 import { AppError } from '@shared/errors/AppError'
+import { inject, injectable } from 'tsyringe'
+import { CreateProjectDTO } from '@projects/repositories/IProjectsRepository'
 
-type CreateProjectDTO = {
-  name: string
-  owner: string
-}
-
+@injectable()
 export class CreateProjectUseCase {
-  constructor(private projectsRepository: ProjectsRepository) {}
+  constructor(
+    @inject('ProjectsRepository')
+    private projectsRepository: IProjectsRepository,
+  ) {}
 
   async execute({ name, owner }: CreateProjectDTO): Promise<Projects> {
     const projectAlreadyExists = await this.projectsRepository.findByName(name)

@@ -1,35 +1,13 @@
 import { Projects } from '@projects/entities/Projects'
 import { AppDataSource } from '@shared/typeorm'
 import { Repository } from 'typeorm'
+import { CreateProjectDTO, IProjectsRepository, PaginateParams, ProjectsPaginateProperties } from './IProjectsRepository'
 
-export type CreateProjectDTO = {
-  name: string
-  owner: string
-}
-export type PaginateParams = {
-  page: number
-  skip: number
-  take: number
-}
-export type ProjectsPaginateProperties = {
-  per_page: number
-  total: number
-  current_page: number
-  data: Projects[]
-}
-export class ProjectsRepository {
+export class ProjectsRepository implements IProjectsRepository {
   private repository: Repository<Projects>
-  private static INSTANCE: ProjectsRepository
 
-  private constructor() {
+  public constructor() {
     this.repository = AppDataSource.getRepository(Projects)
-  }
-
-  public static getInstance(): ProjectsRepository {
-    if (!this.INSTANCE) {
-      this.INSTANCE = new ProjectsRepository()
-    }
-    return this.INSTANCE
   }
 
   async create({ name, owner }: CreateProjectDTO): Promise<Projects> {
@@ -37,16 +15,8 @@ export class ProjectsRepository {
     return await this.repository.save(project)
   }
 
-  async findAll({
-    page,
-    skip,
-    take,
-  }: PaginateParams): Promise<ProjectsPaginateProperties> {
-    const [projects, count] = await this.repository
-      .createQueryBuilder()
-      .skip(skip)
-      .take(take)
-      .getManyAndCount()
+  async findAll({ page, skip, take }: PaginateParams): Promise<ProjectsPaginateProperties> {
+    const [projects, count] = await this.repository.createQueryBuilder().skip(skip).take(take).getManyAndCount()
     return {
       per_page: take,
       total: count,

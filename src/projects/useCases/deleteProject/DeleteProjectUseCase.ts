@@ -1,8 +1,13 @@
 import { ProjectsRepository } from '@projects/repositories/ProjectsRepository'
 import { AppError } from '@shared/errors/AppError'
+import { inject, injectable } from 'tsyringe'
 
+@injectable()
 export class DeleteProjectUseCase {
-  constructor(private projectsRepository: ProjectsRepository) {}
+  constructor(
+    @inject('ProjectsRepository')
+    private projectsRepository: ProjectsRepository,
+  ) {}
   async execute(id: string): Promise<Boolean> {
     const project = await this.projectsRepository.findById(id)
     if (!project) {

@@ -1,6 +1,7 @@
 import { Projects } from '@projects/entities/Projects'
 import { ProjectsRepository } from '@projects/repositories/ProjectsRepository'
 import { AppError } from '@shared/errors/AppError'
+import { inject, injectable } from 'tsyringe'
 
 type UpdateProjectDTO = {
   id: string
@@ -8,8 +9,12 @@ type UpdateProjectDTO = {
   owner: string
 }
 
+@injectable()
 export class UpdateProjectUseCase {
-  constructor(private projectRepository: ProjectsRepository) {}
+  constructor(
+    @inject('ProjectsRepository')
+    private projectRepository: ProjectsRepository,
+  ) {}
 
   async execute({ id, name, owner }: UpdateProjectDTO): Promise<Projects> {
     const project = await this.projectRepository.findById(id)

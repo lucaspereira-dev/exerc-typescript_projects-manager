@@ -6,6 +6,6 @@ export const validUpdateProject = celebrate({
     owner: Joi.string().required(),
   }),
   [Segments.PARAMS]: {
-    id: Joi.string().token().required(),
+    id: Joi.string().uuid().required(),
   },
 })

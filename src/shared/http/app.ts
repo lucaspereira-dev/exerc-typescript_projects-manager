@@ -6,6 +6,7 @@ import { AppError } from '@shared/errors/AppError'
 import { errors } from 'celebrate'
 import swaggerUi from 'swagger-ui-express'
 import swaggerFile from '../../swagger.json'
+import '@shared/container'
 
 const app = express()
 app.use(cors())
@@ -14,20 +15,18 @@ app.use('/docs', swaggerUi.serve, swaggerUi.setup(swaggerFile))
 app.use(routes)
 app.use(errors())
 
-app.use(
-  (error: Error, request: Request, response: Response, next: NextFunction) => {
-    if (error instanceof AppError) {
-      response.status(error.statusCode).json({
-        status: 'error',
-        message: error.message,
-      })
-    }
-    console.log(error)
-    return response.status(500).json({
+app.use((error: Error, request: Request, response: Response, next: NextFunction) => {
+  if (error instanceof AppError) {
+    response.status(error.statusCode).json({
       status: 'error',
-      message: 'Internal server error',
+      message: error.message,
     })
-  },
-)
+  }
+  console.log(error)
+  return response.status(500).json({
+    status: 'error',
+    message: 'Internal server error',
+  })
+})
 
 export { app }
